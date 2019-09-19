@@ -40,6 +40,8 @@ struct MyColor {
 };
 
 std::vector<float> vertices;
+std::vector<GLuint> triIndexes;
+std::vector<GLuint> lineIndexes;
 std::vector<MyColor> colA;
 vector< float > rowpos;
 vector< pair< unsigned long long, unsigned long long > > rowdata;
@@ -119,6 +121,8 @@ void setup() {
     const float proc_distance = 2.5;
 	float extra_height = 0.0;
 
+	int vertIndex = 0;
+
     procthr2coord.resize(tasksperproc.size());
     for (size_t proc = 0; proc < tasksperproc.size(); ++proc) {
         procthr2coord[proc].resize(tasksperproc[proc].size());
@@ -141,6 +145,17 @@ void setup() {
                 MyColor col;
                 getColor(*tasksperproc[proc][thread][i],col);
 
+				triIndexes.push_back(vertIndex + 0);
+				triIndexes.push_back(vertIndex + 1);
+				triIndexes.push_back(vertIndex + 2);
+
+				lineIndexes.push_back(vertIndex + 0);
+				lineIndexes.push_back(vertIndex + 1);
+				lineIndexes.push_back(vertIndex + 1);
+				lineIndexes.push_back(vertIndex + 2);
+				lineIndexes.push_back(vertIndex + 2);
+				lineIndexes.push_back(vertIndex + 0);
+
 				vertices.push_back(start);
 				vertices.push_back(y0);
 
@@ -150,7 +165,9 @@ void setup() {
 				vertices.push_back(start);
 				vertices.push_back(y1);
 
-                colA.push_back(col);
+				vertIndex += 3;
+
+				colA.push_back(col);
                 colA.push_back(col);
                 colA.push_back(col);
 
@@ -378,7 +395,6 @@ void mouse_move(int x, int y, int btn) {
     int dy = y - m_oldy;
 
 	if (!drag && abs(x - m_firstx) < 3 && abs(y - m_firsty) < 3) {
-		std::cout << "move small\n";
 		return;
 	}
 
@@ -746,17 +762,19 @@ int main(int argc, char *argv[]) {
 	glfwSetMouseButtonCallback(g_window, mouse_button_callback);
 	glfwSetCursorPosCallback(g_window, cursor_position_callback);
 
+	// vertex buffer
+
 	GLuint vertex_buffer;
 	glGenBuffers(1, &vertex_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-	glFinish();
 
 	GLuint color_buffer;
 	glGenBuffers(1, &color_buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
 	glBufferData(GL_ARRAY_BUFFER, colA.size() * 3 * sizeof(float), colA.data(), GL_STATIC_DRAW);
-	glFinish();
+
+	// vertex shader
 
 	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
@@ -770,6 +788,8 @@ int main(int argc, char *argv[]) {
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 
+	// fragment shader
+
 	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
 	glCompileShader(fragment_shader);
@@ -779,6 +799,9 @@ int main(int argc, char *argv[]) {
 		glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
+
+	// compile
+
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vertex_shader);
 	glAttachShader(program, fragment_shader);
@@ -794,9 +817,11 @@ int main(int argc, char *argv[]) {
 	GLint vpos_location = glGetAttribLocation(program, "vPos");
 	GLint col_location = glGetAttribLocation(program, "vCol");
 
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	// vertex array object
+
+	unsigned int vertex_array;
+	glGenVertexArrays(1, &vertex_array);
+	glBindVertexArray(vertex_array);
 	glEnableVertexAttribArray(vpos_location);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
 	glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -804,6 +829,20 @@ int main(int argc, char *argv[]) {
 	glEnableVertexAttribArray(col_location);
 	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
 	glVertexAttribPointer(col_location, 3, GL_FLOAT, GL_FALSE,	0, NULL);
+
+	// element buffers
+
+	GLuint tri_element_buffer;
+	glGenBuffers(1, &tri_element_buffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tri_element_buffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, triIndexes.size() * sizeof(triIndexes[0]), triIndexes.data(), GL_STATIC_DRAW);
+
+	GLuint line_element_buffer;
+	glGenBuffers(1, &line_element_buffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, line_element_buffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, lineIndexes.size() * sizeof(lineIndexes[0]), lineIndexes.data(), GL_STATIC_DRAW);
+
+	glFinish();
 
 	glEnable(GL_MULTISAMPLE);
 
@@ -840,8 +879,14 @@ int main(int argc, char *argv[]) {
 		mat4x4_translate_in_place(mvp, m_pos[0], m_pos[1], 0.f);
 		glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
 
-		glBindVertexArray(VAO);
+		glBindVertexArray(vertex_array);
 		glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 2);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tri_element_buffer);
+		glDrawElements(GL_TRIANGLES, triIndexes.size(), GL_UNSIGNED_INT, 0);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, line_element_buffer);
+		glDrawElements(GL_LINES, lineIndexes.size(), GL_UNSIGNED_INT, 0);
+		
 
 		if (selection) {
 			glColor3ub(128, 255, 80);
