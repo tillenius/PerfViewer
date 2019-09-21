@@ -69,6 +69,9 @@ unsigned long long g_selrowidx = 0;
 unsigned long long g_seltask = 0;
 float g_seltime;
 std::unordered_map<std::string, size_t> g_tasknames;
+std::vector<int> g_numtasks;
+std::vector<unsigned long long > g_totaltime;
+std::vector<std::string> g_names;
 
 void getCoords(int x, int y, float &xx, float &yy) {
     xx = x/(float) window_width;
@@ -667,9 +670,19 @@ bool parse(const char *filename) {
         size_t spos = s.find(' ');
         if (spos != std::string::npos)
             s = s.substr(0, spos);
-        if (g_tasknames.find(s) == g_tasknames.end()) {
-            g_tasknames[s] = g_tasknames.size();
-        }
+		auto mapIter = g_tasknames.find(s);
+        if (mapIter == g_tasknames.end()) {
+			const size_t index = g_tasknames.size();
+            g_tasknames[s] = index;
+			g_numtasks.push_back(1);
+			g_totaltime.push_back(alltasks[i].length);
+			g_names.push_back(s);
+		}
+		else {
+			const size_t index = mapIter->second;
+			++g_numtasks[index];
+			g_totaltime[index] += alltasks[i].length;
+		}
     }
 
     // normalize start time
@@ -706,6 +719,24 @@ bool parse(const char *filename) {
             << " parallelism=" << std::setprecision(3) << std::fixed
             << totaltime / (float)endtime
             << endl;
+
+	cout << endl;
+
+	std::vector<size_t> index(g_tasknames.size());
+	for (size_t i = 0; i < index.size(); ++i) {
+		index[i] = i;
+	}
+
+	std::sort(index.begin(), index.end(), [](size_t a, size_t b) -> bool {
+		return g_totaltime[a] < g_totaltime[b];
+	});
+	
+	for (size_t i = 0; i < index.size(); ++i) {
+		size_t idx = index[i];
+		std::cout << std::left << std::setw(20) << g_names[idx]
+			<< std::right << std::setw(10) << format(g_totaltime[idx])
+			<< std::setw(10) << g_numtasks[idx] << endl;
+	}
 
 	return true;
 }
