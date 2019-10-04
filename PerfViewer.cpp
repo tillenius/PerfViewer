@@ -119,28 +119,28 @@ void setup() {
     viewy1 = 0.0;
 
     size_t row = 0;
-	float rowheight = 1.0;
-	float barheight = 0.8;
+    float rowheight = 1.0;
+    float barheight = 0.8;
     const float proc_distance = 2.5;
-	float extra_height = 0.0;
+    float extra_height = 0.0;
 
-	int vertIndex = 0;
+    int vertIndex = 0;
 
     procthr2coord.resize(tasksperproc.size());
     for (size_t proc = 0; proc < tasksperproc.size(); ++proc) {
         procthr2coord[proc].resize(tasksperproc[proc].size());
         for (size_t thread = 0; thread < tasksperproc[proc].size(); ++thread, ++row) {
 
-			float y = extra_height + row * rowheight + 0.5;
-			float y0 = y - barheight/2.0;
-			float y1 = y + barheight/2.0;
+            float y = extra_height + row * rowheight + 0.5;
+            float y0 = y - barheight / 2.0;
+            float y1 = y + barheight / 2.0;
             rowpos.push_back(y);
             rowdata.push_back(make_pair(proc, thread));
             procthr2coord[proc][thread] = y;
 
             for (size_t i = 0; i < tasksperproc[proc][thread].size(); ++i) {
-				float start = ( tasksperproc[proc][thread][i]->start );
-				float end = ( tasksperproc[proc][thread][i]->start + tasksperproc[proc][thread][i]->length );
+                float start = (tasksperproc[proc][thread][i]->start);
+                float end = (tasksperproc[proc][thread][i]->start + tasksperproc[proc][thread][i]->length);
 
                 if (end > viewx1) viewx1 = end;
                 if (y1 > viewy1)  viewy1 = y1;
@@ -148,29 +148,29 @@ void setup() {
                 MyColor col;
                 getColor(*tasksperproc[proc][thread][i],col);
 
-				triIndexes.push_back(vertIndex + 0);
-				triIndexes.push_back(vertIndex + 1);
-				triIndexes.push_back(vertIndex + 2);
+                triIndexes.push_back(vertIndex + 0);
+                triIndexes.push_back(vertIndex + 1);
+                triIndexes.push_back(vertIndex + 2);
 
-				lineIndexes.push_back(vertIndex + 0);
-				lineIndexes.push_back(vertIndex + 1);
-				lineIndexes.push_back(vertIndex + 1);
-				lineIndexes.push_back(vertIndex + 2);
-				lineIndexes.push_back(vertIndex + 2);
-				lineIndexes.push_back(vertIndex + 0);
+                lineIndexes.push_back(vertIndex + 0);
+                lineIndexes.push_back(vertIndex + 1);
+                lineIndexes.push_back(vertIndex + 1);
+                lineIndexes.push_back(vertIndex + 2);
+                lineIndexes.push_back(vertIndex + 2);
+                lineIndexes.push_back(vertIndex + 0);
 
-				vertices.push_back(start);
-				vertices.push_back(y0);
+                vertices.push_back(start);
+                vertices.push_back(y0);
 
-				vertices.push_back(end);
-				vertices.push_back((y0 + y1) / 2.0);
+                vertices.push_back(end);
+                vertices.push_back((y0 + y1) / 2.0);
 
-				vertices.push_back(start);
-				vertices.push_back(y1);
+                vertices.push_back(start);
+                vertices.push_back(y1);
 
-				vertIndex += 3;
+                vertIndex += 3;
 
-				colA.push_back(col);
+                colA.push_back(col);
                 colA.push_back(col);
                 colA.push_back(col);
 
@@ -196,7 +196,7 @@ void doPaint() {
         glRectd(selectionx0, selectiony-0.50, selectionx1, selectiony+0.50);
         glColor3ub(200, 200, 200);
 
-		float xx, yy, yy2;
+        float xx, yy, yy2;
         getCoords(0, 0, xx, yy);
         getCoords(0, window_height, xx, yy2);
 
@@ -323,14 +323,14 @@ void mouse_release(int x, int y, int btn) {
     if (btn != 1)
         return;
 
-	float xx, yy;
+    float xx, yy;
     getCoords(x, y, xx, yy);
 
     size_t bestidx = 0;
-	float best = fabs(rowpos[0] - yy);
+    float best = fabs(rowpos[0] - yy);
 
     for (size_t i = 0; i < rowpos.size(); ++i) {
-		float dist = fabs(rowpos[i] - yy);
+        float dist = fabs(rowpos[i] - yy);
         if (dist < best) {
             bestidx = i;
             best = dist;
@@ -359,15 +359,15 @@ void mouse_click(int x, int y, int btn) {
 
 void mouse_drag(int dx, int dy, int button) {
 
-	float rx = ( (viewx1-viewx0) / (window_width) );
-	float ry = ( (viewy1-viewy0) / (window_height) );
+    float rx = ( (viewx1-viewx0) / (window_width) );
+    float ry = ( (viewy1-viewy0) / (window_height) );
 
     if (button & 1) {
         m_pos[0] += dx*rx/scalex;
         m_pos[1] += dy*ry/scaley;
     }
     else if (button & 2) {
-		float xx, yy;
+        float xx, yy;
         getCoords(m_firstx, m_firsty, xx, yy);
 
         scalex *= exp(dx/100.f);
@@ -375,13 +375,13 @@ void mouse_drag(int dx, int dy, int button) {
         if (scalex < 0.5) scalex = 0.5;
         if (scaley < 0.5) scaley = 0.5;
 
-		float xx2, yy2;
+        float xx2, yy2;
         getCoords(m_firstx, m_firsty, xx2, yy2);
         m_pos[0] += xx2-xx;
         m_pos[1] += yy2-yy;
     }
 
-	float xx, yy;
+    float xx, yy;
     getCoords(window_width/2, window_height/2, xx, yy);
     if (xx < viewx0) m_pos[0] += xx-viewx0;
     if (xx > viewx1) m_pos[0] -= viewx1-xx;
@@ -390,18 +390,18 @@ void mouse_drag(int dx, int dy, int button) {
 }
 
 void mouse_move(int x, int y, int btn) {
-	if (btn == 0) {
-		std::cout << "btn 0\n";
-		return;
-	}
+    if (btn == 0) {
+        std::cout << "btn 0\n";
+        return;
+    }
     int dx = x - m_oldx;
     int dy = y - m_oldy;
 
-	if (!drag && abs(x - m_firstx) < 3 && abs(y - m_firsty) < 3) {
-		return;
-	}
+    if (!drag && abs(x - m_firstx) < 3 && abs(y - m_firsty) < 3) {
+        return;
+    }
 
-	drag = true;
+    drag = true;
 
     mouse_drag(dx, -dy, btn);
     m_oldx = x;
@@ -409,59 +409,59 @@ void mouse_move(int x, int y, int btn) {
 }
 
 static void key_callback(GLFWwindow * window, int key, int scancode, int action, int mods) {
-	if (action != 0) {
-		return;
-	}
+    if (action != 0) {
+        return;
+    }
     switch ( key ) {
-		case GLFW_KEY_UP: {
-			if (g_selrowidx + 1 >= rowdata.size())
-				break;
-			++g_selrowidx;
-			unsigned long long proc;
-			unsigned long long thread;
-			size_t pos;
-			find_task(g_selrowidx, (selectionx0 + selectionx1) / 2.0, proc, thread, pos);
-			select_task(proc, thread, pos);
-			break;
-		}
-		case GLFW_KEY_DOWN: {
-			if (g_selrowidx == 0)
-				break;
-			--g_selrowidx;
-			unsigned long long proc;
-			unsigned long long thread;
-			size_t pos;
-			find_task(g_selrowidx, (selectionx0 + selectionx1) / 2.0, proc, thread, pos);
-			select_task(proc, thread, pos);
-			break;
-		}
-		case GLFW_KEY_LEFT: {
-			unsigned long long proc = rowdata[g_selrowidx].first;
-			unsigned long long thread = rowdata[g_selrowidx].second;
-			if (g_seltask == 0)
-				break;
-			--g_seltask;
-			select_task(proc, thread, g_seltask);
-			break;
-		}
-		case GLFW_KEY_RIGHT: {
-			unsigned long long proc = rowdata[g_selrowidx].first;
-			unsigned long long thread = rowdata[g_selrowidx].second;
-			vector<Entry *> &tasks(tasksperproc[proc][thread]);
-			if (g_seltask+1 == tasks.size())
-				break;
-			++g_seltask;
-			select_task(proc, thread, g_seltask);
-			break;
-		}
-		case GLFW_KEY_KP_MULTIPLY:
-			m_pos[0] = 0.05 * viewx1;
-			m_pos[1] = 0.05 * viewy1;
-			scalex = 0.9;
-			scaley = 0.9;
-			break;
-		case GLFW_KEY_ESCAPE:
-			exit(0);
+        case GLFW_KEY_UP: {
+            if (g_selrowidx + 1 >= rowdata.size())
+                break;
+            ++g_selrowidx;
+            unsigned long long proc;
+            unsigned long long thread;
+            size_t pos;
+            find_task(g_selrowidx, (selectionx0 + selectionx1) / 2.0, proc, thread, pos);
+            select_task(proc, thread, pos);
+            break;
+        }
+        case GLFW_KEY_DOWN: {
+            if (g_selrowidx == 0)
+                break;
+            --g_selrowidx;
+            unsigned long long proc;
+            unsigned long long thread;
+            size_t pos;
+            find_task(g_selrowidx, (selectionx0 + selectionx1) / 2.0, proc, thread, pos);
+            select_task(proc, thread, pos);
+            break;
+        }
+        case GLFW_KEY_LEFT: {
+            unsigned long long proc = rowdata[g_selrowidx].first;
+            unsigned long long thread = rowdata[g_selrowidx].second;
+            if (g_seltask == 0)
+                break;
+            --g_seltask;
+            select_task(proc, thread, g_seltask);
+            break;
+        }
+        case GLFW_KEY_RIGHT: {
+            unsigned long long proc = rowdata[g_selrowidx].first;
+            unsigned long long thread = rowdata[g_selrowidx].second;
+            vector<Entry *> &tasks(tasksperproc[proc][thread]);
+            if (g_seltask+1 == tasks.size())
+                break;
+            ++g_seltask;
+            select_task(proc, thread, g_seltask);
+            break;
+        }
+        case GLFW_KEY_KP_MULTIPLY:
+            m_pos[0] = 0.05 * viewx1;
+            m_pos[1] = 0.05 * viewy1;
+            scalex = 0.9;
+            scaley = 0.9;
+            break;
+        case GLFW_KEY_ESCAPE:
+            exit(0);
     }
 }
 
@@ -469,30 +469,30 @@ int glut_btn = 0;
 bool pressed = false;
 void mouse_button_callback(GLFWwindow * window, int button, int action, int mods)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT) glut_btn = 1;
-	else if (button == GLFW_MOUSE_BUTTON_RIGHT) glut_btn = 2;
+    if (button == GLFW_MOUSE_BUTTON_LEFT) glut_btn = 1;
+    else if (button == GLFW_MOUSE_BUTTON_RIGHT) glut_btn = 2;
 
-	double x, y;
-	glfwGetCursorPos(window, &x, &y);
+    double x, y;
+    glfwGetCursorPos(window, &x, &y);
 
-	if (action == GLFW_PRESS) {
-		mouse_click(x, y, glut_btn);
-		pressed = true;
-	}
-	else if (action == GLFW_RELEASE) {
-		mouse_release(x, y, glut_btn);
-		pressed = false;
-		glut_btn = 0;
-	}
+    if (action == GLFW_PRESS) {
+        mouse_click(x, y, glut_btn);
+        pressed = true;
+    }
+    else if (action == GLFW_RELEASE) {
+        mouse_release(x, y, glut_btn);
+        pressed = false;
+        glut_btn = 0;
+    }
 
 }
 
 void cursor_position_callback(GLFWwindow * window, double x, double y) {
-	if (pressed) {
-		float xx, yy;
-		getCoords(x, y, xx, yy);
-		mouse_move(x, y, glut_btn);
-	}
+    if (pressed) {
+        float xx, yy;
+        getCoords(x, y, xx, yy);
+        mouse_move(x, y, glut_btn);
+    }
 }
 
 void split(const std::string &s, char delim, std::vector<std::string> &elems) {
@@ -503,115 +503,115 @@ void split(const std::string &s, char delim, std::vector<std::string> &elems) {
 }
 
 static bool ReadMatch(const char *& ptr, const char * str) {
-	const int n = strlen(str);
-	if (strncmp(ptr, str, n) == 0) {
-		ptr += n;
-		return true;
-	}
-	return false;
+    const int n = strlen(str);
+    if (strncmp(ptr, str, n) == 0) {
+        ptr += n;
+        return true;
+    }
+    return false;
 };
 
 static void ReadUntilNewline(const char *& ptr) {
-	while (*ptr != '\n' && *ptr != '\r') {
-		++ptr;
-	}
+    while (*ptr != '\n' && *ptr != '\r') {
+        ++ptr;
+    }
 };
 
 static void ReadNewline(const char *& ptr) {
-	while (*ptr == '\n' || *ptr == '\r') {
-		++ptr;
-	}
+    while (*ptr == '\n' || *ptr == '\r') {
+        ++ptr;
+    }
 };
 
 static void SkipLine(const char *& ptr) {
-	ReadUntilNewline(ptr);
-	ReadNewline(ptr);
+    ReadUntilNewline(ptr);
+    ReadNewline(ptr);
 };
 
 static const char * Find(const char * ptr, const char * end, char c) {
-	while (*ptr != c && ptr < end) {
-		++ptr;
-	}
-	return ptr;
+    while (*ptr != c && ptr < end) {
+        ++ptr;
+    }
+    return ptr;
 }
 
 bool parse(const char *filename) {
     std::ifstream infile(filename, std::ios::binary | std::ios::ate);
-	std::cout << filename << std::endl;
+    std::cout << filename << std::endl;
     if (infile.fail()) {
         std::cerr << "Read failed" << std::endl;
         return false;
     }
 
-	std::streamsize size = infile.tellg();
-	infile.seekg(0, std::ios::beg);
+    std::streamsize size = infile.tellg();
+    infile.seekg(0, std::ios::beg);
 
-	std::vector<char> buffer(size);
-	if (!infile.read(buffer.data(), size))
-	{
-		std::cerr << "Read failed" << std::endl;
-		return false;
-	}
+    std::vector<char> buffer(size);
+    if (!infile.read(buffer.data(), size))
+    {
+        std::cerr << "Read failed" << std::endl;
+        return false;
+    }
 
 
-	const char * ptr = buffer.data();
-	const char * end = buffer.data() + size;
+    const char * ptr = buffer.data();
+    const char * end = buffer.data() + size;
 
-	int numLines = 0;
-	for (const char * i = ptr; i < end; ++i) {
-		if (*i == '\n') {
-			++numLines;
-		}
-	}
+    int numLines = 0;
+    for (const char * i = ptr; i < end; ++i) {
+        if (*i == '\n') {
+            ++numLines;
+        }
+    }
 
-	alltasks.reserve(numLines);
+    alltasks.reserve(numLines);
 
-	if (ReadMatch(ptr, "LOG 2")) {
-		SkipLine(ptr);
-	}
-	else if (ReadMatch(ptr, "LOG 3")) {
-		SkipLine(ptr);
-	}
-	while (ptr < end) {
-		if (*ptr == '#') {
-			SkipLine(ptr);
-			continue;
-		}
+    if (ReadMatch(ptr, "LOG 2")) {
+        SkipLine(ptr);
+    }
+    else if (ReadMatch(ptr, "LOG 3")) {
+        SkipLine(ptr);
+    }
+    while (ptr < end) {
+        if (*ptr == '#') {
+            SkipLine(ptr);
+            continue;
+        }
 
-		const char * sep = Find(ptr, end, ':');
-		if (sep == end || sep[1] != ' ') {
-			std::cerr << "Parse error!" << std::endl;
-			return false;
-		}
+        const char * sep = Find(ptr, end, ':');
+        if (sep == end || sep[1] != ' ') {
+            std::cerr << "Parse error!" << std::endl;
+            return false;
+        }
 
-		Entry e;
+        Entry e;
 
-		const char * sp = Find(ptr, sep, ' ');
-		if (sp != sep) {
-			e.proc = strtoull(ptr, NULL, 10);
-			e.thread = strtoull(sp + 1, NULL, 10);
-		}
-		else {
-			e.proc = 0;
-			e.thread = strtoull(ptr, NULL, 10);
-		}
+        const char * sp = Find(ptr, sep, ' ');
+        if (sp != sep) {
+            e.proc = strtoull(ptr, NULL, 10);
+            e.thread = strtoull(sp + 1, NULL, 10);
+        }
+        else {
+            e.proc = 0;
+            e.thread = strtoull(ptr, NULL, 10);
+        }
 
-		char * next;
-		e.start = strtoull(sep + 2, &next, 10);
-		if (*next != ' ') {
-			std::cerr << "Parse error!" << std::endl;
-			return false;
-		}
-		char * name;
-		e.length = strtoull(next + 1, &name, 10);
-		ptr = name;
-		ReadUntilNewline(ptr);
-		e.name = std::string((const char *) name + 1, ptr);
+        char * next;
+        e.start = strtoull(sep + 2, &next, 10);
+        if (*next != ' ') {
+            std::cerr << "Parse error!" << std::endl;
+            return false;
+        }
+        char * name;
+        e.length = strtoull(next + 1, &name, 10);
+        ptr = name;
+        ReadUntilNewline(ptr);
+        e.name = std::string((const char *) name + 1, ptr);
 
-		alltasks.push_back(e);
+        alltasks.push_back(e);
 
-		ReadNewline(ptr);
-	}
+        ReadNewline(ptr);
+    }
 
     infile.close();
 
@@ -620,49 +620,49 @@ bool parse(const char *filename) {
         return false;
     }
 
-	// fix process ids
-	std::sort(alltasks.begin(), alltasks.end(), [](const Entry & a, const Entry & b) -> bool {
-		if (a.proc != b.proc) {
-			return a.proc < b.proc;
-		}
-		if (a.thread != b.thread) {
-			return a.thread < b.thread;
-		}
-		return a.start < b.start;
-	});
+    // fix process ids
+    std::sort(alltasks.begin(), alltasks.end(), [](const Entry & a, const Entry & b) -> bool {
+        if (a.proc != b.proc) {
+            return a.proc < b.proc;
+        }
+        if (a.thread != b.thread) {
+            return a.thread < b.thread;
+        }
+        return a.start < b.start;
+    });
 
-	unsigned long long currentProc = alltasks[0].proc;
-	unsigned long long currentThread = alltasks[0].thread;
-	unsigned long long procCounter = 0;
-	unsigned long long threadCounter = 0;
-	tasksperproc.resize(1);
-	tasksperproc[0].resize(1);
-	tasksperproc[procCounter][threadCounter].push_back(&alltasks[0]);
-	alltasks[0].proc = 0;
-	alltasks[0].thread = 0;
-	for (size_t i = 1; i < alltasks.size(); ++i) {
-		if (alltasks[i].proc == currentProc) {
-			alltasks[i].proc = procCounter;
-			if (alltasks[i].thread == currentThread) {
-				alltasks[i].thread = threadCounter;
-			}
-			else {
-				currentThread = alltasks[i].thread;
-				alltasks[i].thread = ++threadCounter;
-				tasksperproc[procCounter].push_back(std::vector< Entry * >());
-			}
-		}
-		else {
-			currentProc = alltasks[i].proc;
-			alltasks[i].proc = ++procCounter;
-			currentThread = alltasks[i].thread;
-			threadCounter = 0;
-			alltasks[i].thread = threadCounter;
-			tasksperproc.push_back(std::vector< std::vector< Entry * > >());
-			tasksperproc[procCounter].push_back(std::vector< Entry * >());
-		}
-		tasksperproc[procCounter][threadCounter].push_back(&alltasks[i]);
-	}
+    unsigned long long currentProc = alltasks[0].proc;
+    unsigned long long currentThread = alltasks[0].thread;
+    unsigned long long procCounter = 0;
+    unsigned long long threadCounter = 0;
+    tasksperproc.resize(1);
+    tasksperproc[0].resize(1);
+    tasksperproc[procCounter][threadCounter].push_back(&alltasks[0]);
+    alltasks[0].proc = 0;
+    alltasks[0].thread = 0;
+    for (size_t i = 1; i < alltasks.size(); ++i) {
+        if (alltasks[i].proc == currentProc) {
+            alltasks[i].proc = procCounter;
+            if (alltasks[i].thread == currentThread) {
+                alltasks[i].thread = threadCounter;
+            }
+            else {
+                currentThread = alltasks[i].thread;
+                alltasks[i].thread = ++threadCounter;
+                tasksperproc[procCounter].push_back(std::vector< Entry * >());
+            }
+        }
+        else {
+            currentProc = alltasks[i].proc;
+            alltasks[i].proc = ++procCounter;
+            currentThread = alltasks[i].thread;
+            threadCounter = 0;
+            alltasks[i].thread = threadCounter;
+            tasksperproc.push_back(std::vector< std::vector< Entry * > >());
+            tasksperproc[procCounter].push_back(std::vector< Entry * >());
+        }
+        tasksperproc[procCounter][threadCounter].push_back(&alltasks[i]);
+    }
 
     // store all task names (for coloring later)
     for (size_t i = 0; i < alltasks.size(); ++i) {
@@ -670,39 +670,39 @@ bool parse(const char *filename) {
         size_t spos = s.find(' ');
         if (spos != std::string::npos)
             s = s.substr(0, spos);
-		auto mapIter = g_tasknames.find(s);
+        auto mapIter = g_tasknames.find(s);
         if (mapIter == g_tasknames.end()) {
-			const size_t index = g_tasknames.size();
+            const size_t index = g_tasknames.size();
             g_tasknames[s] = index;
-			g_numtasks.push_back(1);
-			g_totaltime.push_back(alltasks[i].length);
-			g_names.push_back(s);
-		}
-		else {
-			const size_t index = mapIter->second;
-			++g_numtasks[index];
-			g_totaltime[index] += alltasks[i].length;
-		}
+            g_numtasks.push_back(1);
+            g_totaltime.push_back(alltasks[i].length);
+            g_names.push_back(s);
+        }
+        else {
+            const size_t index = mapIter->second;
+            ++g_numtasks[index];
+            g_totaltime[index] += alltasks[i].length;
+        }
     }
 
     // normalize start time
     size_t num_procs = procCounter + 1;
 
     std::vector<unsigned long long> starttimes(num_procs);
-	for (int i = 0; i < tasksperproc.size(); ++i) {
-		unsigned long long start = 0;
-		bool first = true;
-		for (int j = 0; j < tasksperproc[i].size(); ++j) {
-			if (tasksperproc[i][j].empty()) {
-				continue;
-			}
-			if (first || tasksperproc[i][j][0]->start < start) {
-				first = false;
-				start = tasksperproc[i][j][0]->start;
-			}
-		}
-		starttimes[i] = start;
-	}
+    for (int i = 0; i < tasksperproc.size(); ++i) {
+        unsigned long long start = 0;
+        bool first = true;
+        for (int j = 0; j < tasksperproc[i].size(); ++j) {
+            if (tasksperproc[i][j].empty()) {
+                continue;
+            }
+            if (first || tasksperproc[i][j][0]->start < start) {
+                first = false;
+                start = tasksperproc[i][j][0]->start;
+            }
+        }
+        starttimes[i] = start;
+    }
 
     unsigned long long endtime = 0;
     unsigned long long totaltime = 0;
@@ -720,25 +720,25 @@ bool parse(const char *filename) {
             << totaltime / (float)endtime
             << endl;
 
-	cout << endl;
+    cout << endl;
 
-	std::vector<size_t> index(g_tasknames.size());
-	for (size_t i = 0; i < index.size(); ++i) {
-		index[i] = i;
-	}
+    std::vector<size_t> index(g_tasknames.size());
+    for (size_t i = 0; i < index.size(); ++i) {
+        index[i] = i;
+    }
 
-	std::sort(index.begin(), index.end(), [](size_t a, size_t b) -> bool {
-		return g_totaltime[a] < g_totaltime[b];
-	});
-	
-	for (size_t i = 0; i < index.size(); ++i) {
-		size_t idx = index[i];
-		std::cout << std::left << std::setw(20) << g_names[idx]
-			<< std::right << std::setw(10) << format(g_totaltime[idx])
-			<< std::setw(10) << g_numtasks[idx] << endl;
-	}
+    std::sort(index.begin(), index.end(), [](size_t a, size_t b) -> bool {
+        return g_totaltime[a] < g_totaltime[b];
+    });
+    
+    for (size_t i = 0; i < index.size(); ++i) {
+        size_t idx = index[i];
+        std::cout << std::left << std::setw(20) << g_names[idx]
+            << std::right << std::setw(10) << format(g_totaltime[idx])
+            << std::setw(10) << g_numtasks[idx] << endl;
+    }
 
-	return true;
+    return true;
 }
 
 static const char * vertex_shader_text =
@@ -764,7 +764,7 @@ static const char * fragment_shader_text =
 
 static void error_callback(int error, const char * description)
 {
-	fprintf(stderr, "Error: %s\n", description);
+    fprintf(stderr, "Error: %s\n", description);
 }
 
 int main(int argc, char *argv[]) {
@@ -777,161 +777,161 @@ int main(int argc, char *argv[]) {
     if (!parse(argv[1]))
         return 1;
 
-	if (!glfwInit()) {
-		std::cerr << "Error initializing glfw" << std::endl;
-		return 0;
-	}
+    if (!glfwInit()) {
+        std::cerr << "Error initializing glfw" << std::endl;
+        return 0;
+    }
 
     setup();
 
-	glfwWindowHint(GLFW_SAMPLES, 4);
-	g_window = glfwCreateWindow(1024, 640, "Viewer", NULL, NULL); 
-	glfwMakeContextCurrent(g_window);
-	gladLoadGL();
-	
-	glfwSetKeyCallback(g_window, key_callback);
-	glfwSetMouseButtonCallback(g_window, mouse_button_callback);
-	glfwSetCursorPosCallback(g_window, cursor_position_callback);
+    glfwWindowHint(GLFW_SAMPLES, 4);
+    g_window = glfwCreateWindow(1024, 640, "Viewer", NULL, NULL); 
+    glfwMakeContextCurrent(g_window);
+    gladLoadGL();
+    
+    glfwSetKeyCallback(g_window, key_callback);
+    glfwSetMouseButtonCallback(g_window, mouse_button_callback);
+    glfwSetCursorPosCallback(g_window, cursor_position_callback);
 
-	// vertex buffer
+    // vertex buffer
 
-	GLuint vertex_buffer;
-	glGenBuffers(1, &vertex_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+    GLuint vertex_buffer;
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
 
-	GLuint color_buffer;
-	glGenBuffers(1, &color_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	glBufferData(GL_ARRAY_BUFFER, colA.size() * 3 * sizeof(float), colA.data(), GL_STATIC_DRAW);
+    GLuint color_buffer;
+    glGenBuffers(1, &color_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
+    glBufferData(GL_ARRAY_BUFFER, colA.size() * 3 * sizeof(float), colA.data(), GL_STATIC_DRAW);
 
-	// vertex shader
+    // vertex shader
 
-	GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
-	glCompileShader(vertex_shader);
+    GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex_shader, 1, &vertex_shader_text, NULL);
+    glCompileShader(vertex_shader);
 
-	int  success;
-	char infoLog[512];
-	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
+    int  success;
+    char infoLog[512];
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
 
-	// fragment shader
+    // fragment shader
 
-	GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
-	glCompileShader(fragment_shader);
+    GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment_shader, 1, &fragment_shader_text, NULL);
+    glCompileShader(fragment_shader);
 
-	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
+    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
 
-	// compile
+    // compile
 
-	GLuint program = glCreateProgram();
-	glAttachShader(program, vertex_shader);
-	glAttachShader(program, fragment_shader);
-	glLinkProgram(program);
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
 
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(program, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(program, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
 
-	GLint mvp_location = glGetUniformLocation(program, "MVP");
-	GLint vpos_location = glGetAttribLocation(program, "vPos");
-	GLint col_location = glGetAttribLocation(program, "vCol");
+    GLint mvp_location = glGetUniformLocation(program, "MVP");
+    GLint vpos_location = glGetAttribLocation(program, "vPos");
+    GLint col_location = glGetAttribLocation(program, "vCol");
 
-	// vertex array object
+    // vertex array object
 
-	unsigned int vertex_array;
-	glGenVertexArrays(1, &vertex_array);
-	glBindVertexArray(vertex_array);
-	glEnableVertexAttribArray(vpos_location);
-	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-	glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+    unsigned int vertex_array;
+    glGenVertexArrays(1, &vertex_array);
+    glBindVertexArray(vertex_array);
+    glEnableVertexAttribArray(vpos_location);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glVertexAttribPointer(vpos_location, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	glEnableVertexAttribArray(col_location);
-	glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
-	glVertexAttribPointer(col_location, 3, GL_FLOAT, GL_FALSE,	0, NULL);
+    glEnableVertexAttribArray(col_location);
+    glBindBuffer(GL_ARRAY_BUFFER, color_buffer);
+    glVertexAttribPointer(col_location, 3, GL_FLOAT, GL_FALSE,	0, NULL);
 
-	// element buffers
+    // element buffers
 
-	GLuint tri_element_buffer;
-	glGenBuffers(1, &tri_element_buffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tri_element_buffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, triIndexes.size() * sizeof(triIndexes[0]), triIndexes.data(), GL_STATIC_DRAW);
+    GLuint tri_element_buffer;
+    glGenBuffers(1, &tri_element_buffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tri_element_buffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, triIndexes.size() * sizeof(triIndexes[0]), triIndexes.data(), GL_STATIC_DRAW);
 
-	GLuint line_element_buffer;
-	glGenBuffers(1, &line_element_buffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, line_element_buffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, lineIndexes.size() * sizeof(lineIndexes[0]), lineIndexes.data(), GL_STATIC_DRAW);
+    GLuint line_element_buffer;
+    glGenBuffers(1, &line_element_buffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, line_element_buffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, lineIndexes.size() * sizeof(lineIndexes[0]), lineIndexes.data(), GL_STATIC_DRAW);
 
-	glFinish();
+    glFinish();
 
-	glEnable(GL_MULTISAMPLE);
+    glEnable(GL_MULTISAMPLE);
 
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-	while (!glfwWindowShouldClose(g_window)) {
-		glfwGetFramebufferSize(g_window, &window_width, &window_height);
-		glViewport(0, 0, window_width, window_height);
+    while (!glfwWindowShouldClose(g_window)) {
+        glfwGetFramebufferSize(g_window, &window_width, &window_height);
+        glViewport(0, 0, window_width, window_height);
 
-		glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-		if (selection) {
-			glColor3ub(128, 255, 80);
-			glRectd(selectionx0, selectiony - 0.50, selectionx1, selectiony + 0.50);
-			glColor3ub(200, 200, 200);
+        if (selection) {
+            glColor3ub(128, 255, 80);
+            glRectd(selectionx0, selectiony - 0.50, selectionx1, selectiony + 0.50);
+            glColor3ub(200, 200, 200);
 
-			float xx, yy, yy2;
-			getCoords(0, 0, xx, yy);
-			getCoords(0, window_height, xx, yy2);
+            float xx, yy, yy2;
+            getCoords(0, 0, xx, yy);
+            getCoords(0, window_height, xx, yy2);
 
-			glBegin(GL_LINES);
-			glVertex3d(selectionx0, yy, 0.0);
-			glVertex3d(selectionx0, yy2, 0.0);
-			glVertex3d(selectionx1, yy, 0.0);
-			glVertex3d(selectionx1, yy2, 0.0);
-			glEnd();
-		}
+            glBegin(GL_LINES);
+            glVertex3d(selectionx0, yy, 0.0);
+            glVertex3d(selectionx0, yy2, 0.0);
+            glVertex3d(selectionx1, yy, 0.0);
+            glVertex3d(selectionx1, yy2, 0.0);
+            glEnd();
+        }
 
-		glUseProgram(program);
-		mat4x4 m1;
-		mat4x4 mvp;
-		mat4x4_ortho(m1, viewx0, viewx1, viewy0, viewy1, -1.f, 1.f);
-		mat4x4_scale_aniso(mvp, m1, scalex, scaley, 1.0f);
-		mat4x4_translate_in_place(mvp, m_pos[0], m_pos[1], 0.f);
-		glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
+        glUseProgram(program);
+        mat4x4 m1;
+        mat4x4 mvp;
+        mat4x4_ortho(m1, viewx0, viewx1, viewy0, viewy1, -1.f, 1.f);
+        mat4x4_scale_aniso(mvp, m1, scalex, scaley, 1.0f);
+        mat4x4_translate_in_place(mvp, m_pos[0], m_pos[1], 0.f);
+        glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tri_element_buffer);
-		glDrawElements(GL_TRIANGLES, triIndexes.size(), GL_UNSIGNED_INT, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tri_element_buffer);
+        glDrawElements(GL_TRIANGLES, triIndexes.size(), GL_UNSIGNED_INT, 0);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, line_element_buffer);
-		glDrawElements(GL_LINES, lineIndexes.size(), GL_UNSIGNED_INT, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, line_element_buffer);
+        glDrawElements(GL_LINES, lineIndexes.size(), GL_UNSIGNED_INT, 0);
 
-		if (selection) {
-			glColor3ub(128, 255, 80);
-			glBegin(GL_LINES);
-			glVertex3d(selectionx0, selectiony + .50, 0.0);
-			glVertex3d(selectionx0, selectiony - .50, 0.0);
-			glVertex3d(selectionx1, selectiony + .50, 0.0);
-			glVertex3d(selectionx1, selectiony - .50, 0.0);
-			glEnd();
-		}
+        if (selection) {
+            glColor3ub(128, 255, 80);
+            glBegin(GL_LINES);
+            glVertex3d(selectionx0, selectiony + .50, 0.0);
+            glVertex3d(selectionx0, selectiony - .50, 0.0);
+            glVertex3d(selectionx1, selectiony + .50, 0.0);
+            glVertex3d(selectionx1, selectiony - .50, 0.0);
+            glEnd();
+        }
 
 
-		glfwSwapBuffers(g_window);
-		glfwPollEvents();
-	}
+        glfwSwapBuffers(g_window);
+        glfwPollEvents();
+    }
 
-	glfwDestroyWindow(g_window);
-	glfwTerminate();
+    glfwDestroyWindow(g_window);
+    glfwTerminate();
     return 0;
 }
