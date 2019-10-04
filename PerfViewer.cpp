@@ -910,14 +910,11 @@ int main(int argc, char *argv[]) {
 		mat4x4_translate_in_place(mvp, m_pos[0], m_pos[1], 0.f);
 		glUniformMatrix4fv(mvp_location, 1, GL_FALSE, (const GLfloat *)mvp);
 
-		glBindVertexArray(vertex_array);
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size() / 2);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tri_element_buffer);
 		glDrawElements(GL_TRIANGLES, triIndexes.size(), GL_UNSIGNED_INT, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, line_element_buffer);
 		glDrawElements(GL_LINES, lineIndexes.size(), GL_UNSIGNED_INT, 0);
-		
 
 		if (selection) {
 			glColor3ub(128, 255, 80);
